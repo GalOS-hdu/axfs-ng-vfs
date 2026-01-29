@@ -1,0 +1,20 @@
+1. dir.rs中判断is_cacheable有什么作用
+2. 推测在arceos中存在对vfs中的 direntry 的缓存， 根目录的direntry等常驻缓存中 ,且从这个根目录的direntry开始根据用户的访问初始化新的direntry,
+ 比如用户访问 /home， 则初始化一个 home 的direntry,且该direntry的inner中持有根目录的reference
+
+3. arceos的mountpoint 到底做了什么， 为什么 new_root第一次出现就是为 ext4fs服务， 按理说new-root是创建全局的所有文件系统的根 ，应该在其子挂载点上挂载文件系统与伪文件系统
+ ，但是这样就只有ext4， ，而没有伪文件系统 ，那么arceos或者galos的伪文件系统到底如何发挥aqw21
+
+4.     /// 创建目录类型的目录项
+    /// node_fn: 用于创建目录节点的闭包（接收弱引用以避免循环引用）
+    /// reference: 节点的引用关系
+    pub fn new_dir(node_fn: impl FnOnce(WeakDirEntry) -> DirNode, reference: Reference) -> Self {
+        // 使用 Arc::new_cyclic 创建循环安全的 Arc
+        Self(Arc::new_cyclic(|this| Inner {
+            // 闭包接收 Weak<Inner>，转换为 WeakDirEntry 传给 node_fn 创建 DirNode
+            node: Node::Dir(node_fn(WeakDirEntry(this.clone()))),
+            node_type: NodeType::Directory, // 目录类型固定为 Directory
+            reference,
+            user_data: Mutex::default(), // 初始化用户数据锁
+        }))
+    } direntry中的这个函数，为user_data复制，这个字段有什么用           这个函数有什么用

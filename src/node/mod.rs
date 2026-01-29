@@ -87,6 +87,55 @@ pub trait NodeOps: Send + Sync + 'static {
     fn flags(&self) -> NodeFlags {
         NodeFlags::empty()
     }
+
+    /// Lists all extended attribute names.
+    ///
+    /// The names are returned as a null-terminated string list in the buffer.
+    /// Returns the number of bytes written to the buffer, or an error.
+    ///
+    /// Default implementation returns `Unsupported` error.
+    fn listxattr(&self, _buffer: &mut [u8]) -> VfsResult<usize> {
+        Err(VfsError::Unsupported)
+    }
+
+    /// Gets the value of an extended attribute.
+    ///
+    /// # Arguments
+    /// * `name` - The attribute name (with namespace prefix, e.g., "user.comment")
+    /// * `buffer` - Buffer to store the attribute value
+    ///
+    /// Returns the size of the attribute value, or an error if not found.
+    ///
+    /// Default implementation returns `Unsupported` error.
+    fn getxattr(&self, _name: &str, _buffer: &mut [u8]) -> VfsResult<usize> {
+        Err(VfsError::Unsupported)
+    }
+
+    /// Sets the value of an extended attribute.
+    ///
+    /// # Arguments
+    /// * `name` - The attribute name (with namespace prefix, e.g., "user.comment")
+    /// * `value` - The attribute value to set
+    /// * `flags` - Creation flags (XATTR_CREATE=0x1, XATTR_REPLACE=0x2)
+    ///
+    /// Returns `Ok(())` on success, or an error.
+    ///
+    /// Default implementation returns `Unsupported` error.
+    fn setxattr(&self, _name: &str, _value: &[u8], _flags: u32) -> VfsResult<()> {
+        Err(VfsError::Unsupported)
+    }
+
+    /// Removes an extended attribute.
+    ///
+    /// # Arguments
+    /// * `name` - The attribute name to remove
+    ///
+    /// Returns `Ok(())` on success, or an error if not found.
+    ///
+    /// Default implementation returns `Unsupported` error.
+    fn removexattr(&self, _name: &str) -> VfsResult<()> {
+        Err(VfsError::Unsupported)
+    }
 }
 
 enum Node {
