@@ -285,6 +285,14 @@ impl DirEntry {
     pub fn flags(&self) -> NodeFlags;
 
     pub fn sync(&self, data_only: bool) -> VfsResult<()>;
+
+    pub fn listxattr(&self, buffer: &mut [u8]) -> VfsResult<usize>;
+
+    pub fn getxattr(&self, name: &str, buffer: &mut [u8]) -> VfsResult<usize>;
+
+    pub fn setxattr(&self, name: &str, value: &[u8], flags: u32) -> VfsResult<()>;
+
+    pub fn removexattr(&self, name: &str) -> VfsResult<()>;
 }
 
 impl DirEntry {
