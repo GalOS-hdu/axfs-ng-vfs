@@ -247,11 +247,10 @@ impl Location {
         // Check if source item (not source directory) is an ancestor of destination directory
         // This prevents moving a directory into itself or its subdirectories
         let src = self.lookup_no_follow(src_name)?;
-        if src.node_type() == NodeType::Directory {
-            if !src.ptr_eq(dst_dir) && src.entry.is_ancestor_of(&dst_dir.entry)? {
+        if src.node_type() == NodeType::Directory
+            && !src.ptr_eq(dst_dir) && src.entry.is_ancestor_of(&dst_dir.entry)? {
                 return Err(VfsError::InvalidInput);
             }
-        }
         self.entry
             .as_dir()?
             .rename(src_name, dst_dir.entry.as_dir()?, dst_name)
